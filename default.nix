@@ -65,26 +65,32 @@
         !(pkgs.lib.hasPrefix "." (baseNameOf path));
     };
 
-    # Nix is smart enough to :wq
-
     # Specify cmake flags
-    # cmakeFlags = [ "-DMYAR=Foo" ];
+    cmakeFlags = [
+      "--no-warn-unused-cli" # Supresses unused varibles warning
+      # "-DMyVar=foo" # Example CMake argument
+    ];
 
-    # buildDir = "build-nix-${self.name}-${self.version}";
+    # Nix is smart enough to detect we're using cmake to build our project
+    # It will read our CMakeLists.txt file and create needed definitions
+    # Alternatively, we could have been pre-defining the default phases that nix does
+    # for a CMake based projects (see definitions bellow that are commented-out ###)
 
-    # configurePhase = ''
-    #   mkdir ./${self.buildDir} && cd ./${self.buildDir}
-    #   cmake .. -DCMAKE_BUILD_TYPE=Release
-    # '';
+    ### buildDir = "build-nix-${self.name}-${self.version}";
 
-    # buildPhase = ''
-    #   make -j$(nproc)
-    # '';
+    ### configurePhase = ''
+    ###   mkdir ./${self.buildDir} && cd ./${self.buildDir}
+    ###   cmake .. -DCMAKE_BUILD_TYPE=Release
+    ### '';
 
-    # installPhase = ''
-    #   mkdir -p $out/bin
-    #   cp src/${self.name} $out/bin/
-    # '';
+    ### buildPhase = ''
+    ###   make -j$(nproc)
+    ### '';
+
+    ### installPhase = ''
+    ###   mkdir -p $out/bin
+    ###   cp src/${self.name} $out/bin/
+    ### '';
 
     # passthru - it is meant for values that would be useful outside of the derivation
     # in other parts of a Nix expression (e.g. in other derivations)
