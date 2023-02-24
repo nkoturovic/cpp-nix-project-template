@@ -5,3 +5,4 @@ find_package(fmt REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(src)
+install(TARGETS cpp-nix-app DESTINATION bin)

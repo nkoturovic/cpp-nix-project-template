@@ -40,6 +40,7 @@ In this section, you can find various commands that can help you use the full po
 ### Other nix commands
 
 - `nix flake update` - Updates `flake.lock` file (used both by `flake.nix` and `default.nix`)
+- `nix fmt` - Format nix files based on a formatter specified in `flake.nix` file
 
 Flakes are still an experimental feature of Nix, to add flake support look at the [flakes documentation][doc-nix-flake]
 
