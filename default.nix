@@ -33,9 +33,10 @@
   # Stdenv is base for packaging software in Nix It is used to pull in dependencies such as the GCC toolchain,
   # GNU make, core utilities, patch and diff utilities, and so on. Basic tools needed to compile a huge pile
   # of software currently present in nixpkgs.
+  #
   # Some platforms have different toolchains in their StdEnv definition by default
-  # To ensure gcc, we used gccStdenv as a base instead of just stdenv
-  # mkDerivation is the main function used to build packages with the standard environment.
+  # To ensure gcc being default, we use gccStdenv as a base instead of just stdenv
+  # mkDerivation is the main function used to build packages with the Stdenv
   package = pkgs.gcc12Stdenv.mkDerivation (self: {
     name = "cpp-nix-app";
     version = "0.0.3";
@@ -51,7 +52,6 @@
     # Programs and libraries used by the new derivation at run-time
     buildInputs = with pkgs; [
       fmt
-      kotur-nixpkgs.cpp-jwt
     ];
 
     # builtins.path is used since source of our package is the current directory: ./
@@ -119,14 +119,14 @@
 
     # Shell (dev environment) specific packages
     packages = with pkgs; [
-      neovim
+      kotur-nixpkgs.dinosay # packet loads from the custom nixpkgs (kotur-nixpkgs)
     ];
 
     # Hook used for modifying the prompt look and printing the welcome message
     shellHook = ''
       PS1="\[\e[32m\][\[\e[m\]\[\e[33m\]nix-shell\\[\e[m\]:\[\e[36m\]\w\[\e[m\]\[\e[32m\]]\[\e[m\]\\$\[\e[m\] "
       alias ll="ls -l"
-      cowsay "Welcome to the '${package.name}' dev environment!" 2> /dev/null
+      dinosay -r -b happy -w 60 "Welcome to the '${package.name}' dev environment!"
     '';
   };
 in
