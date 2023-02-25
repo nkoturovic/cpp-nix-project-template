@@ -14,6 +14,11 @@ Configured to work when used both as a regular [nix derivation][doc-nix-derivati
 [flake][doc-nix-flake]. In both cases, the version of `nixpkgs` is used from `flake.lock` (JSON file). 
 That way, we get some of the flake advantages even when using it as a regular derivation.
 
+Similar to `nixpkgs`, project leverages the custom [`kotur-nixpkgs`](https://github.com/nkoturovic/kotur-nixpkgs) 
+channel for all package requirements that are not available within `nixpkgs`. One such example is the python package
+[`dinosay`](https://github.com/nkoturovic/kotur-nixpkgs/blob/master/pkgs/dinosay/default.nix), which is being used to display
+the welcome message at the moment of entering dev shell with `nix-shell` command.
+
 ## Project structure
 
 - [`default.nix`][file-default.nix] - Definition for the package being defined by this repo, list of dependencies (nix packages)
