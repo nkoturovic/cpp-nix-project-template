@@ -1,12 +1,15 @@
 {
   "nodes": {
     "flake-utils": {
+      "inputs": {
+        "systems": "systems"
+      },
       "locked": {
-        "lastModified": 1676283394,
-        "narHash": "sha256-XX2f9c3iySLCw54rJ/CZs+ZK6IQy7GXNY4nSOyu2QG4=",
+        "lastModified": 1694529238,
+        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "3db36a8b464d0c4532ba1c7dda728f4576d6d073",
+        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
         "type": "github"
       },
       "original": {
@@ -17,16 +20,16 @@
     "koturNixPkgs": {
       "flake": false,
       "locked": {
-        "lastModified": 1677333980,
-        "narHash": "sha256-75dgGQvuQfJVKEUFwhZC9QrN1syl82LNSFnGD+edTag=",
+        "lastModified": 1694342316,
+        "narHash": "sha256-g+hFCXBncpciZL4UZXv2YKY2Sl+Mn9/mYxKBGtei4ak=",
         "owner": "nkoturovic",
         "repo": "kotur-nixpkgs",
-        "rev": "8c61094d2a636848cc8b84727e9b28fe3defdd84",
+        "rev": "086926b6d49901d2eb5a8ae1e9ef346707e88717",
         "type": "github"
       },
       "original": {
         "owner": "nkoturovic",
-        "ref": "v0.3",
+        "ref": "v0.5",
         "repo": "kotur-nixpkgs",
         "type": "github"
       }
@@ -50,16 +53,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1677179781,
-        "narHash": "sha256-+peLp16ruWLuTFHo0ZUbLlS1/meS/+RsWQQ9bUAzOh8=",
+        "lastModified": 1700538105,
+        "narHash": "sha256-uZhOCmwv8VupEmPZm3erbr9XXmyg7K67Ul3+Rx2XMe0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "50c23cd4ff6c8344e0b4d438b027b3afabfe58dd",
+        "rev": "51a01a7e5515b469886c120e38db325c96694c2f",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.11",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -70,6 +73,21 @@
         "koturNixPkgs": "koturNixPkgs",
         "miniCompileCommands": "miniCompileCommands",
         "nixpkgs": "nixpkgs"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
       }
     }
   },
