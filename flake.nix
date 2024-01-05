@@ -1,7 +1,7 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.miniCompileCommands = {
-    url = github:danielbarter/mini_compile_commands/v0.4;
+    url = github:danielbarter/mini_compile_commands/v0.6;
     flake = false;
   };
   inputs.koturNixPkgs = {
