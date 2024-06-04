@@ -30,6 +30,12 @@
       inherit system;
     },
 }: let
+  # Using mini_compile_commands to export compile_commands.json
+  # https://github.com/danielbarter/mini_compile_commands/
+  # Look at the README.md file for instructions on generating compile_commands.json
+  mcc-env = (pkgs.callPackage miniCompileCommands {}).wrap pkgs.stdenv;
+  mcc-hook = (pkgs.callPackage miniCompileCommands {}).hook;
+
   # Stdenv is base for packaging software in Nix It is used to pull in dependencies such as the GCC toolchain,
   # GNU make, core utilities, patch and diff utilities, and so on. Basic tools needed to compile a huge pile
   # of software currently present in nixpkgs.
@@ -37,13 +43,14 @@
   # Some platforms have different toolchains in their StdEnv definition by default
   # To ensure gcc being default, we use gccStdenv as a base instead of just stdenv
   # mkDerivation is the main function used to build packages with the Stdenv
-  package = pkgs.stdenv.mkDerivation (self: {
+  package = mcc-env.mkDerivation (self: {
     name = "cpp-nix-app";
     version = "0.0.3";
 
     # Programs and libraries used/available at build-time
     nativeBuildInputs = with pkgs; [
-      stdenv # Also used bellow with mini_compile_commands in shell
+      mcc-hook # hook for generating compile commands when building the package
+
       ncurses
       cmake
       gnumake
@@ -103,11 +110,6 @@
       # shell = shell
     };
   });
-
-  # Using mini_compile_commands to export compile_commands.json
-  # https://github.com/danielbarter/mini_compile_commands/
-  # Look at the README.md file for instructions on generating compile_commands.json
-  mcc-env = (pkgs.callPackage miniCompileCommands {}).wrap pkgs.stdenv;
 
   # Development shell
   shell = (pkgs.mkShell.override {stdenv = mcc-env;}) {

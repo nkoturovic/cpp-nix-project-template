@@ -5,7 +5,7 @@
     flake = false;
   };
   inputs.koturNixPkgs = {
-    url = github:nkoturovic/kotur-nixpkgs/v0.5;
+    url = github:nkoturovic/kotur-nixpkgs/v0.6.0;
     flake = false;
   };
   outputs = {
