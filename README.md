@@ -59,7 +59,11 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug
 make -j$(nproc)
 ```
   
-### Exporting `compile_commands.json`
+## Exporting `compile_commands.json`
+
+**NOTE**: Compile commands are automatically generated with `nix build`, or `nix-build`.
+
+### Interactively export `compile_commands.json` from nix shell
 
 In order to have autocompletion for the project, you can leverage `compile_commands.json` which can be exported by
 following the steps described bellow
