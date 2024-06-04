@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(cpp-nix-app)
+project(CppNixApp)
 
 find_package(fmt REQUIRED)
 
