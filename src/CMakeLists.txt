@@ -1,3 +1,2 @@
-set(SOURCE_FILES main.cpp)
-add_executable(cpp-nix-app ${SOURCE_FILES})
+add_executable(cpp-nix-app main.cpp)
 target_link_libraries(cpp-nix-app fmt::fmt)
