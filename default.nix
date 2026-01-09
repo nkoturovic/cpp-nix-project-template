@@ -13,12 +13,6 @@
       config = {};
       inherit system;
     },
-  # Helper tool for generating compile-commands.json
-  miniCompileCommands ?
-    fetchTarball {
-      url = "https://github.com/danielbarter/mini_compile_commands/archive/${lock.nodes.miniCompileCommands.locked.rev}.tar.gz";
-      sha256 = lock.nodes.miniCompileCommands.locked.narHash;
-    },
   # Custom nixpkgs channel, owner's nickname is kotur, hence kotur-nixpkgs
   kotur-nixpkgs ? let
     koturPkgs = fetchTarball {
@@ -30,11 +24,9 @@
       inherit system;
     },
 }: let
-  # Using mini_compile_commands to export compile_commands.json
-  # https://github.com/danielbarter/mini_compile_commands/
-  # Look at the README.md file for instructions on generating compile_commands.json
-  mcc-env = (pkgs.callPackage miniCompileCommands {}).wrap pkgs.stdenv;
-  mcc-hook = (pkgs.callPackage miniCompileCommands {}).hook;
+  # Import the standalone script
+  # We use writeShellScriptBin to wrap it properly for Nix so it's available in PATH
+  generate-compile-commands = pkgs.writeShellScriptBin "generate-compile-commands" (builtins.readFile ./scripts/generate-compile-commands.sh);
 
   # Stdenv is base for packaging software in Nix It is used to pull in dependencies such as the GCC toolchain,
   # GNU make, core utilities, patch and diff utilities, and so on. Basic tools needed to compile a huge pile
@@ -43,14 +35,12 @@
   # Some platforms have different toolchains in their StdEnv definition by default
   # To ensure gcc being default, we use gccStdenv as a base instead of just stdenv
   # mkDerivation is the main function used to build packages with the Stdenv
-  package = mcc-env.mkDerivation (self: {
+  package = pkgs.stdenv.mkDerivation (self: {
     name = "cpp-nix-app";
     version = "0.0.3";
 
     # Programs and libraries used/available at build-time
     nativeBuildInputs = with pkgs; [
-      mcc-hook # hook for generating compile commands when building the package
-
       ncurses
       cmake
       gnumake
@@ -58,7 +48,7 @@
 
     # Programs and libraries used by the new derivation at run-time
     buildInputs = with pkgs; [
-      fmt
+      nlohmann_json # An example nix package (Nlohmann JSON library for C++)
     ];
 
     # builtins.path is used since source of our package is the current directory: ./
@@ -75,6 +65,7 @@
     # Specify cmake flags
     cmakeFlags = [
       "--no-warn-unused-cli" # Supresses unused varibles warning
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
       # "-DMyVar=foo" # Example CMake argument
     ];
 
@@ -99,6 +90,24 @@
     ###   cp src/${self.name} $out/bin/
     ### '';
 
+    # Post-processing to make compile_commands.json usable by editors
+    postInstall = ''
+      mkdir -p $out
+      find . -name compile_commands.json -exec cp {} $out/ \;
+
+      if [ -f $out/compile_commands.json ]; then
+        # 1. Sanitize paths: Replace the temporary build directory with a relative path (.)
+        sed -i "s|$PWD|.|g" $out/compile_commands.json
+
+        # 2. Inject System Include Paths:
+        # Nix uses environment variables for includes (NIX_CFLAGS_COMPILE).
+        # We inject these flags into the JSON so editors find <iostream> without special envs.
+        FLAGS=$(echo $NIX_CFLAGS_COMPILE | sed 's|/|\\/|g')
+        sed -i "s|/bin/g++ |/bin/g++ $FLAGS |g" $out/compile_commands.json
+        sed -i "s|/bin/c++ |/bin/c++ $FLAGS |g" $out/compile_commands.json
+      fi
+    '';
+
     # passthru - it is meant for values that would be useful outside of the derivation
     # in other parts of a Nix expression (e.g. in other derivations)
     passthru = {
@@ -112,7 +121,7 @@
   });
 
   # Development shell
-  shell = (pkgs.mkShell.override {stdenv = mcc-env;}) {
+  shell = pkgs.mkShell {
     # Copy build inputs (dependencies) from the derivation the nix-shell environment
     # That way, there is no need for speciying dependenvies separately for derivation and shell
     inputsFrom = [
@@ -122,13 +131,19 @@
     # Shell (dev environment) specific packages
     packages = with pkgs; [
       kotur-nixpkgs.dinosay # packet loads from the custom nixpkgs (kotur-nixpkgs)
+      generate-compile-commands
     ];
 
     # Hook used for modifying the prompt look and printing the welcome message
     shellHook = ''
-      PS1="\[\e[32m\][\[\e[m\]\[\e[33m\]nix-shell\\[\e[m\]:\[\e[36m\]\w\[\e[m\]\[\e[32m\]]\[\e[m\]\\$\[\e[m\] "
-      alias ll="ls -l"
-      dinosay -r -b happy -w 60 "Welcome to the '${package.name}' dev environment!"
+      # Only print the welcome message if NOT running via the 'nix run' wrapper
+      # (The wrapper sets NIX_SILENT=1 to suppress this)
+      if [ -z "$NIX_SILENT" ]; then
+        PS1="\[\e[32m\][\[\e[m\]\[\e[33m\]nix-shell\\[\e[m\]:\[\e[36m\]\w\[\e[m\]\[\e[32m\]]\[\e[m\]\\$\[\e[m\] "
+        alias ll="ls -l"
+        dinosay -r -b happy -w 60 "Welcome to the '${package.name}' dev environment!"
+      fi
+      generate-compile-commands
     '';
   };
 in

@@ -4,3 +4,4 @@
 result
 compile_commands.json
 .cache
+.nix-deps-hash

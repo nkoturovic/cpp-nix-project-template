@@ -5,8 +5,8 @@
 
 # C++ & Nix project template
 
-Starter project for your C++ application with nix as a package manager  
-If you don't know what nix package manager is, please look at the [FAQ](#faq) section
+Starter project for your C++ application with Nix as a package manager  
+If you don't know what the Nix package manager is, please look at the [FAQ](#faq) section
 
 ## About project
 
@@ -17,7 +17,7 @@ That way, we get some of the flake advantages even when using it as a regular de
 Similar to `nixpkgs`, project leverages the custom [`kotur-nixpkgs`](https://github.com/nkoturovic/kotur-nixpkgs) 
 channel for all package requirements that are not available within `nixpkgs`. One such example is the python package
 [`dinosay`](https://github.com/nkoturovic/kotur-nixpkgs/blob/master/pkgs/dinosay/default.nix), which is being used to display
-the welcome message at the moment of entering dev shell with `nix-shell` command.
+the welcome message at the moment of entering the dev shell with `nix-shell` command.
 
 ## Project structure
 
@@ -45,7 +45,8 @@ In this section, you can find various commands that can help you use the full po
 ### Other nix commands
 
 - `nix flake update` - Updates `flake.lock` file (used both by `flake.nix` and `default.nix`)
-- `nix fmt` - Format nix files based on a formatter specified in `flake.nix` file
+- `nix fmt .` - Format nix files based on a formatter specified in the `flake.nix` file
+- `nix run .#generate-compile-commands` - Force regenerate `compile_commands.json`
 
 Flakes are still an experimental feature of Nix, to add flake support look at the [flakes documentation][doc-nix-flake]
 
@@ -61,33 +62,28 @@ make -j$(nproc)
   
 ## Exporting `compile_commands.json`
 
-**NOTE**: Compile commands are automatically generated with `nix build`, or `nix-build`.
+**NOTE**: Compile commands are **automatically generated** when entering the development shell (`nix-shell` or `nix develop`).
 
-### Interactively export `compile_commands.json` from nix shell
+The setup detects if your build dependencies have changed and automatically updates the config for you.
 
-In order to have autocompletion for the project, you can leverage `compile_commands.json` which can be exported by
-following the steps described bellow
+### Manually regenerating `compile_commands.json`
 
-1. Open two terminal/shell instances and `cd` into the project
-2. In both terminals enter the development shell (look how in [Nix commands section](#nix-commands))
-3. In terminal one type
+If you ever need to manually trigger a regeneration (e.g. after a git pull), you can run:
 
-   ```sh
-   mini_compile_commands_server.py
-   ```
+```sh
+# From inside the shell
+generate-compile-commands --force
 
-4. In terminal two use the [standard CMake build procedure](#building-with-cmake-from-dev-shell)
-without the final (gnu) make command
-5. In terminal one, terminate the app with `SIGINT` by pressing `Ctrl+c`
-6. `compile_commands.json` file should be generated at the root of the project
-7. Close terminal one, continue using or close terminal two
+# Or from outside
+nix run .#generate-compile-commands
+```
 
 ## FAQ
 
-List of frequiently asked questions:
+List of frequently asked questions:
 
-- [What is a nix package manager?][doc-nix-manual]
-- [How to install the nix package manager?][web-nix-install]
+- [What is the Nix package manager?][doc-nix-manual]
+- [How to install the Nix package manager?][web-nix-install]
 
 [doc-nix-manual]: https://nixos.org/manual/nix/stable/
 [web-nix-install]: https://nixos.org/download.html#download-nix
